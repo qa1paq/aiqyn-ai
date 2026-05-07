@@ -14,7 +14,7 @@ from app.core.base import Base
 from app.core.config import settings
 
 # Import all models so Alembic can detect them
-import app.models.user
+import app.models.user  # includes PasswordResetToken
 import app.models.profile
 import app.models.assessment
 import app.models.university
