@@ -1,43 +1,53 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import httpx
 from app.core.config import settings
 
 
 def send_reset_code(to_email: str, code: str, full_name: str) -> bool:
-    """Send password reset code via email. Returns True on success."""
-    if not settings.SMTP_HOST or not settings.SMTP_USER:
-        # Dev mode: just print the code to console
+    if not settings.RESEND_API_KEY:
         print(f"\n{'='*40}")
         print(f"[DEV] Password reset code for {to_email}: {code}")
         print(f"{'='*40}\n")
         return True
 
+    html = f"""
+    <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;
+                background:#0F172A;color:#F8FAFC;padding:32px;border-radius:16px">
+      <h1 style="color:#6366F1;margin-bottom:8px">AIQYN AI</h1>
+      <p style="color:#94A3B8">Привет, {full_name}!</p>
+      <p>Твой код для восстановления пароля:</p>
+      <div style="background:#1E293B;border-radius:12px;padding:24px;
+                  text-align:center;margin:24px 0">
+        <span style="font-size:40px;font-weight:900;letter-spacing:14px;
+                     color:#6366F1">{code}</span>
+      </div>
+      <p style="color:#64748B;font-size:13px">
+        Код действителен <strong>15 минут</strong>.<br>
+        Если ты не запрашивал восстановление — просто игнорируй это письмо.
+      </p>
+      <hr style="border-color:#1E293B;margin:24px 0">
+      <p style="color:#334155;font-size:12px">AIQYN AI — AI-путеводитель в зарубежные университеты</p>
+    </div>
+    """
+
     try:
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = "AIQYN AI — Код восстановления пароля"
-        msg["From"] = settings.SMTP_USER
-        msg["To"] = to_email
-
-        html = f"""
-        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#0F172A;color:#F8FAFC;padding:32px;border-radius:16px">
-          <h1 style="color:#6366F1;margin-bottom:8px">AIQYN AI</h1>
-          <p style="color:#94A3B8">Привет, {full_name}!</p>
-          <p>Твой код для восстановления пароля:</p>
-          <div style="background:#1E293B;border-radius:12px;padding:24px;text-align:center;margin:24px 0">
-            <span style="font-size:36px;font-weight:900;letter-spacing:12px;color:#6366F1">{code}</span>
-          </div>
-          <p style="color:#64748B;font-size:13px">Код действителен 15 минут.<br>Если ты не запрашивал восстановление — просто игнорируй это письмо.</p>
-        </div>
-        """
-
-        msg.attach(MIMEText(html, "html"))
-
-        with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT) as server:
-            server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-            server.sendmail(settings.SMTP_USER, to_email, msg.as_string())
-        return True
-
+        response = httpx.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "from": "AIQYN AI <onboarding@resend.dev>",
+                "to": [to_email],
+                "subject": f"Твой код восстановления: {code}",
+                "html": html,
+            },
+            timeout=10,
+        )
+        if response.status_code == 200:
+            return True
+        print(f"Resend error: {response.status_code} — {response.text}")
+        return False
     except Exception as e:
         print(f"Email error: {e}")
         return False

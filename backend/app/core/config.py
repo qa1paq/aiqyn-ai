@@ -15,11 +15,8 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
 
-    # Email (optional — if empty, codes print to console in dev mode)
-    SMTP_HOST: Optional[str] = None
-    SMTP_PORT: int = 465
-    SMTP_USER: Optional[str] = None
-    SMTP_PASSWORD: Optional[str] = None
+    # Email via Resend (optional — if empty, codes print to Railway logs)
+    RESEND_API_KEY: Optional[str] = None
 
     model_config = {
         "env_file": str(_ENV_FILE) if _ENV_FILE.exists() else None,
