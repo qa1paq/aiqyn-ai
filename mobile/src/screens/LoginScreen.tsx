@@ -64,7 +64,11 @@ export default function LoginScreen() {
 
       <Button title={t('login_btn')} onPress={handleLogin} loading={loading} style={s.btn} />
 
-      <TouchableOpacity onPress={() => navigation.navigate('Register')} style={s.row}>
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} style={s.row}>
+        <Text style={s.forgot}>Забыл пароль?</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Register')} style={[s.row, { marginTop: 12 }]}>
         <Text style={s.link}>
           {t('login_no_account')} <Text style={s.linkAccent}>{t('login_register')}</Text>
         </Text>
@@ -91,6 +95,7 @@ const s = StyleSheet.create({
   },
   btn: { marginTop: 8, marginBottom: 20 },
   row: { alignItems: 'center' },
+  forgot: { color: '#6366F1', fontSize: 14, fontWeight: '600' },
   link: { color: '#64748B', fontSize: 14 },
   linkAccent: { color: '#6366F1', fontWeight: '700' },
 });

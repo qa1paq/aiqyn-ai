@@ -3,7 +3,7 @@ import { tokenStorage } from '../storage/tokenStorage';
 
 // Local:  'http://192.168.0.125:8000/api/v1'
 // Cloud:  'https://YOUR-APP.up.railway.app/api/v1'
-const BASE_URL = 'https://YOUR-APP.up.railway.app/api/v1';
+const BASE_URL = 'https://aiqyn-ai-production.up.railway.app/api/v1';
 
 const apiClient = axios.create({
   baseURL: BASE_URL,

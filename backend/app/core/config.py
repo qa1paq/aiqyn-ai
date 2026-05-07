@@ -15,8 +15,13 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
 
+    # Email (optional — if empty, codes print to console in dev mode)
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: int = 465
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+
     model_config = {
-        # Use .env if it exists locally; on Railway env vars are set directly
         "env_file": str(_ENV_FILE) if _ENV_FILE.exists() else None,
         "env_file_encoding": "utf-8",
         "case_sensitive": True,

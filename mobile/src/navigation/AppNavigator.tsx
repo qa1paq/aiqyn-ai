@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import LoginScreen from '../screens/LoginScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ProfileSetupScreen from '../screens/ProfileSetupScreen';
 import AssessmentIntroScreen from '../screens/AssessmentIntroScreen';
 import AssessmentQuestionScreen from '../screens/AssessmentQuestionScreen';
@@ -36,6 +38,8 @@ export default function AppNavigator() {
         <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} options={{ title: 'Мой профиль' }} />
         <Stack.Screen name="AssessmentIntro" component={AssessmentIntroScreen} options={{ headerShown: false }} />
         <Stack.Screen name="AssessmentQuestion" component={AssessmentQuestionScreen} options={{ title: 'Тест', headerLeft: () => null }} />
