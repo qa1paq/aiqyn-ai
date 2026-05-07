@@ -15,8 +15,9 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
 
-    # Email via Brevo HTTP API (optional — if empty, codes print to Railway logs)
-    BREVO_API_KEY: Optional[str] = None
+    # Email via Mailjet HTTP API (optional — if empty, codes print to Railway logs)
+    MAILJET_API_KEY: Optional[str] = None
+    MAILJET_SECRET_KEY: Optional[str] = None
 
     model_config = {
         "env_file": str(_ENV_FILE) if _ENV_FILE.exists() else None,

@@ -3,7 +3,7 @@ from app.core.config import settings
 
 
 def send_reset_code(to_email: str, code: str, full_name: str) -> bool:
-    if not settings.BREVO_API_KEY:
+    if not settings.MAILJET_API_KEY or not settings.MAILJET_SECRET_KEY:
         print(f"\n{'='*40}")
         print(f"[DEV] Password reset code for {to_email}: {code}")
         print(f"{'='*40}\n")
@@ -31,22 +31,23 @@ def send_reset_code(to_email: str, code: str, full_name: str) -> bool:
 
     try:
         response = httpx.post(
-            "https://api.brevo.com/v3/smtp/email",
-            headers={
-                "api-key": settings.BREVO_API_KEY,
-                "Content-Type": "application/json",
-            },
+            "https://api.mailjet.com/v3.1/send",
+            auth=(settings.MAILJET_API_KEY, settings.MAILJET_SECRET_KEY),
             json={
-                "sender": {"name": "AIQYN AI", "email": "aiqynaii@gmail.com"},
-                "to": [{"email": to_email}],
-                "subject": f"Твой код восстановления: {code}",
-                "htmlContent": html,
+                "Messages": [
+                    {
+                        "From": {"Email": "aiqynaii@gmail.com", "Name": "AIQYN AI"},
+                        "To": [{"Email": to_email}],
+                        "Subject": f"Твой код восстановления: {code}",
+                        "HTMLPart": html,
+                    }
+                ]
             },
             timeout=15,
         )
-        if response.status_code in (200, 201):
+        if response.status_code == 200:
             return True
-        print(f"Brevo error: {response.status_code} — {response.text}")
+        print(f"Mailjet error: {response.status_code} — {response.text}")
         return False
     except Exception as e:
         print(f"Email error: {e}")
