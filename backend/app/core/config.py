@@ -15,9 +15,8 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
 
-    # Email via Gmail SMTP (optional — if empty, codes print to Railway logs)
-    GMAIL_USER: Optional[str] = None
-    GMAIL_APP_PASSWORD: Optional[str] = None
+    # Email via Brevo HTTP API (optional — if empty, codes print to Railway logs)
+    BREVO_API_KEY: Optional[str] = None
 
     model_config = {
         "env_file": str(_ENV_FILE) if _ENV_FILE.exists() else None,

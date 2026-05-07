@@ -1,11 +1,9 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import httpx
 from app.core.config import settings
 
 
 def send_reset_code(to_email: str, code: str, full_name: str) -> bool:
-    if not settings.GMAIL_USER or not settings.GMAIL_APP_PASSWORD:
+    if not settings.BREVO_API_KEY:
         print(f"\n{'='*40}")
         print(f"[DEV] Password reset code for {to_email}: {code}")
         print(f"{'='*40}\n")
@@ -31,17 +29,25 @@ def send_reset_code(to_email: str, code: str, full_name: str) -> bool:
     </div>
     """
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Твой код восстановления: {code}"
-    msg["From"] = f"AIQYN AI <{settings.GMAIL_USER}>"
-    msg["To"] = to_email
-    msg.attach(MIMEText(html, "html", "utf-8"))
-
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(settings.GMAIL_USER, settings.GMAIL_APP_PASSWORD)
-            server.sendmail(settings.GMAIL_USER, to_email, msg.as_string())
-        return True
+        response = httpx.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "api-key": settings.BREVO_API_KEY,
+                "Content-Type": "application/json",
+            },
+            json={
+                "sender": {"name": "AIQYN AI", "email": "aiqynaii@gmail.com"},
+                "to": [{"email": to_email}],
+                "subject": f"Твой код восстановления: {code}",
+                "htmlContent": html,
+            },
+            timeout=15,
+        )
+        if response.status_code in (200, 201):
+            return True
+        print(f"Brevo error: {response.status_code} — {response.text}")
+        return False
     except Exception as e:
         print(f"Email error: {e}")
         return False
